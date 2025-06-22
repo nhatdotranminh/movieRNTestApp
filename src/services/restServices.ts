@@ -32,7 +32,7 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
     response => {
         if (__DEV__) {
-            console.log(`<-- ${response.status} ${response.config.url}`, response.data);
+            console.log(`<-- RESPONSE ${response.status} ${response.config.url}`, response);
         }
         return response;
     },

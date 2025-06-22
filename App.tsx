@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import AppStack from './src/navigation/AppStack';
 import { store } from './src/redux/store';
@@ -13,9 +14,11 @@ import './src/services/restServices';
 
 const App = () => {
   return (
-    <Provider store={store}>
-      <AppStack />
-    </Provider>
+    <SafeAreaProvider>
+      <Provider store={store}>
+        <AppStack />
+      </Provider>
+    </SafeAreaProvider>
   );
 };
 
