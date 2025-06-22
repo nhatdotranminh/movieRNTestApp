@@ -1,10 +1,12 @@
-import { Movie, MovieDetail } from '../../types';
+import { Credits, Movie } from '../../types';
 
 interface MovieState {
   list: Movie[];
-  detail: MovieDetail | null;
+  detail: any;
+  credits: Credits | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   detailStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
+  creditsStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   page: number;
   totalPages: number;
@@ -16,12 +18,14 @@ interface MovieState {
 
 const movieInitialState: MovieState = {
   list: [],
-  detail: null,
+  detail: {},
+  credits: null,
   status: 'idle',
   detailStatus: 'idle',
+  creditsStatus: 'idle',
   error: null,
   page: 1,
-  totalPages: 0,
+  totalPages: 1,
   canLoadMore: true,
   category: 'now_playing',
   sortBy: '',
@@ -29,4 +33,3 @@ const movieInitialState: MovieState = {
 };
 
 export { movieInitialState };
-

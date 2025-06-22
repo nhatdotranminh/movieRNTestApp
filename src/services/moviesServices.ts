@@ -38,7 +38,11 @@ export class MoviesServices {
         return axios.get(url).then(response => response.data)
     }
     static getMovieDetails = (id: number) => {
-        const url = baseURL + `/movie/${id}?language=en-US&append_to_response=credits`
+        const url = baseURL + `/movie/${id}?language=en-US`
+        return axios.get(url).then(response => response.data)
+    }
+    static getMovieCredits = (id: number) => {
+        const url = baseURL + `/movie/${id}/credits?language=en-US`
         return axios.get(url).then(response => response.data)
     }
     // Search movies from TMDB

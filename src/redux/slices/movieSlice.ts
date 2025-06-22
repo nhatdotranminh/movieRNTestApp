@@ -15,8 +15,13 @@ export const fetchMovies = createAsyncThunk('movies/fetchMovies', async ({ categ
   return { ...response, keywordId: _keywordId };
 });
 
-export const fetchMovieDetail = createAsyncThunk('movies/fetchMovieDetail', async (movieId: number) => {
-  const response = await MoviesServices.getMovieDetails(movieId);
+export const fetchMovieDetail = createAsyncThunk('movies/fetchMovieDetail', async (id: number) => {
+  const response = await MoviesServices.getMovieDetails(id);
+  return response;
+});
+
+export const fetchMovieCredits = createAsyncThunk('movies/fetchMovieCredits', async (id: number) => {
+  const response = await MoviesServices.getMovieCredits(id);
   return response;
 });
 
@@ -60,6 +65,16 @@ const movieSlice = createSlice({
       .addCase(fetchMovieDetail.rejected, (state, action) => {
         state.detailStatus = 'failed';
         state.error = action.error.message || null;
+      })
+      .addCase(fetchMovieCredits.pending, (state) => {
+        state.creditsStatus = 'loading';
+      })
+      .addCase(fetchMovieCredits.fulfilled, (state, action) => {
+        state.creditsStatus = 'succeeded';
+        state.credits = action.payload;
+      })
+      .addCase(fetchMovieCredits.rejected, (state) => {
+        state.creditsStatus = 'failed';
       });
   },
 });
