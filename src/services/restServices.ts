@@ -14,7 +14,7 @@ axios.interceptors.request.use(
         config.headers['Content-Type'] = 'application/json';
 
         // ** Set Authorization header
-        const accessToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlMDZkOWMwMTI2ZTcxODBlZDM3N2NmMWY5ODBkYzUyZCIsIm5iZiI6MTc1MDQ4NzIyNS41Miwic3ViIjoiNjg1NjUwYjlhOWQ1ZTA5NjE2ZWM1Nzc4Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.jj7j_h6LQ8rMu1PpQk1crCwyH9AJJ0L_aIXOeCbQNns'
+        const accessToken = ''
         if (accessToken && !config.headers['Authorization']) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
         }
