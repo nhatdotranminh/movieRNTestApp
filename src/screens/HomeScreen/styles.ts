@@ -17,8 +17,13 @@ const styles = StyleSheet.create({
 
     emptyText: {
         fontSize: 16,
-        color: '#a9a9a9',
+        color: '#000',
         marginTop: 16,
+        fontWeight: 'bold',
+        opacity: 0.5,
+    },
+    listContainer: {
+        paddingHorizontal: 20,
     },
     filterButton: {
         flexDirection: 'row',
@@ -76,6 +81,17 @@ const styles = StyleSheet.create({
         color: 'red',
         textAlign: 'center',
         paddingHorizontal: 20,
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    errorText2: {
+        marginTop: 10,
+        color: '000',
+        textAlign: 'center',
+        paddingHorizontal: 20,
+        fontWeight: 'bold',
+        fontSize: 14,
+        opacity: 0.5,
     },
     loadingIndicator: {
         flex: 1,

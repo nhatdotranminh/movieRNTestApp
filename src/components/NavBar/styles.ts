@@ -5,8 +5,10 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         backgroundColor: '#fff',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
     },
     leftContainer: {
         width: '10%',

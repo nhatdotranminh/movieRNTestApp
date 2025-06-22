@@ -1,18 +1,24 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect, useMemo } from 'react';
-import { ActivityIndicator, FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { useDispatch, useSelector } from 'react-redux';
+import CastProfile from '../../components/CastProfile';
 import Header from '../../components/Header';
+import Loading from '../../components/Loading';
 import NavBar from '../../components/NavBar';
 import { imageBaseUrl } from '../../config/AppConfig';
+import { checkIfInWatchlist, toggleWatchlist } from '../../helper/watchListHelper';
 import { RootStackParamList } from '../../navigation/AppStack';
 import { fetchMovieCredits, fetchMovieDetail } from '../../redux/slices/movieSlice';
 import { AppDispatch, RootState } from '../../redux/store';
 import { Cast } from '../../types';
 import styles from './styles';
+const Error = lazy(() => import('../../components/Error'));
+const ContentNotFound = lazy(() => import('../../components/ContentNotFound'));
+
 
 type MovieDetailScreenRouteProp = RouteProp<RootStackParamList, 'MovieDetail'>;
 
@@ -21,14 +27,20 @@ const MovieDetailScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const { movieId } = route.params;
-
   const { detail: movie, detailStatus, error, credits } = useSelector((state: RootState) => state.movies);
+  const [isInWatchlist, setIsInWatchlist] = useState(false)
 
   useEffect(() => {
     dispatch(fetchMovieDetail(movieId));
     dispatch(fetchMovieCredits(movieId));
   }, [dispatch, movieId]);
-
+  const _checkIfInWatchlist = async () => {
+    const isInWatchlist = await checkIfInWatchlist(movie);
+    setIsInWatchlist(isInWatchlist);
+  }
+  useEffect(() => {
+    _checkIfInWatchlist();
+  }, [movie]);
   const processedCrew = useMemo(() => {
     if (!credits?.crew) {
       return [];
@@ -37,14 +49,16 @@ const MovieDetailScreen = () => {
     credits.crew.forEach(member => {
       const key = member.original_name;
       const existing = crewMap.get(key);
-      if (existing) {
-        existing.jobs.push(member.job);
-      } else {
-        crewMap.set(key, {
-          name: member.name,
-          original_name: member.original_name,
-          jobs: [member.job],
-        });
+      if (member.job === 'Director' || member.job === 'Writer') {
+        if (existing) {
+          existing.jobs.push(member.job);
+        } else {
+          crewMap.set(key, {
+            name: member.name,
+            original_name: member.original_name,
+            jobs: [member.job],
+          });
+        }
       }
     });
     return Array.from(crewMap.values());
@@ -54,44 +68,72 @@ const MovieDetailScreen = () => {
 
   if (detailStatus === 'loading' || detailStatus === 'idle') {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
-      </View>
+      <Loading />
     );
   }
-
   if (detailStatus === 'failed') {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Error: {error}</Text>
-      </View>
+      <Suspense
+        fallback={
+          <Loading />
+        }>
+        <Error message={error || 'An unknown error occurred.'} />
+      </Suspense>
     );
   }
 
   if (!movie) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Movie not found.</Text>
-      </View>
+      <Suspense
+        fallback={
+          <Loading />
+        }>
+        <ContentNotFound />
+      </Suspense>
     );
   }
 
+  const certificate = movie?.release_dates?.results?.[0]?.release_dates?.[0]?.certification;
   const releaseYear = new Date(movie.release_date).getFullYear();
   const runtimeHours = Math.floor(movie.runtime / 60);
   const runtimeMinutes = movie.runtime % 60;
   const progress = movie.vote_average
 
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Header />
-
+  const onPressWatchlist = () => {
+    const params = {
+      adult: movie.adult,
+      backdrop_path: movie.backdrop_path,
+      genre_ids: movie.genre_ids,
+      id: movie.id,
+      original_language: movie.original_language,
+      original_title: movie.original_title,
+      overview: movie.overview,
+      popularity: movie.popularity,
+      poster_path: movie.poster_path,
+      release_date: movie.release_date,
+      title: movie.title,
+      video: movie.video,
+      vote_average: movie.vote_average,
+      vote_count: movie.vote_count,
+    }
+    setIsInWatchlist(prev => !prev);
+    toggleWatchlist(params);
+  };
+  const renderCastProfile = ({ item }: { item: Cast }) => {
+    return (
+      <CastProfile item={item} />
+    )
+  }
+  const renderBody = () => {
+    return (
+      <>
         <View style={styles.topContainer}>
-          <NavBar title={`${movie.title} (${releaseYear})`} customStyle={{ backgroundColor: 'transparent' }} customTextColor="#fff" />
           <View style={styles.quickInfoContainer}>
             <Image source={{ uri: `${imageBaseUrl}${movie.poster_path}` }} style={styles.poster} />
             <View style={styles.headerTextContainer}>
+              {certificate ? <View style={styles.certificateContainer}>
+                <Text style={styles.certificationText}>{certificate}</Text>
+              </View> : null}
               <Text style={styles.detailsText}>{`${new Date(movie.release_date).toLocaleDateString()}  • ${runtimeHours}h ${runtimeMinutes}m`}</Text>
               <Text style={styles.detailsText}>{movie.genres.map((g: { name: any; }) => g.name).join(', ')}</Text>
               <Text style={styles.detailsText}><Text style={styles.boldText}>Status:</Text> {movie.status}</Text>
@@ -99,7 +141,6 @@ const MovieDetailScreen = () => {
             </View>
           </View>
         </View>
-
         <View style={styles.infoContainer}>
           <View style={styles.scoreContainer}>
             <View style={styles.circularProgressContainer}>
@@ -136,43 +177,32 @@ const MovieDetailScreen = () => {
           <Text style={styles.tagline}>{movie.tagline}</Text>
           <Text style={styles.overviewTitle}>Overview</Text>
           <Text style={styles.overviewText}>{movie.overview}</Text>
-          <TouchableOpacity style={styles.watchlistButton}>
+          <TouchableOpacity style={styles.watchlistButton} onPress={onPressWatchlist}>
             <Icon name="bookmark" size={20} color="#fff" />
-            <Text style={styles.watchlistButtonText}>Add To Watchlist</Text>
+            <Text style={styles.watchlistButtonText}>{isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.castContainer}>
+        {topBilledCast.length > 0 ? <View style={styles.castContainer}>
           <Text style={styles.castTitle}>Top Billed Cast</Text>
           <FlatList
             data={topBilledCast}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }: { item: Cast }) => (
-              <View style={styles.castCard}>
-                {item.profile_path ? (
-                  <Image
-                    source={{ uri: `${imageBaseUrl}${item.profile_path}` }}
-                    style={styles.castImage}
-                  />
-                ) : (
-                  <View style={[styles.castImage, styles.placeholderImage]}>
-                    <Icon name="user" size={60} color="#ccc" />
-                  </View>
-                )}
-                <View style={styles.castInfo}>
-                  <Text style={styles.castName} numberOfLines={2}>{item.original_name
-                  }</Text>
-                  <Text style={styles.castCharacter} numberOfLines={2}>{item.name}</Text>
-                </View>
-              </View>
-            )}
+            renderItem={renderCastProfile}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingLeft: 15 }}
           />
-        </View>
-
-
+        </View> : null}
+      </>
+    )
+  }
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView stickyHeaderIndices={[1]}>
+        <Header />
+        <NavBar title={`${movie.title} ${releaseYear ? `(${releaseYear})` : ''}`} customStyle={{ backgroundColor: '#00A9CE' }} customTextColor="#fff" />
+        {renderBody()}
       </ScrollView>
     </SafeAreaView>
   )

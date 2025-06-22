@@ -38,7 +38,7 @@ export class MoviesServices {
         return axios.get(url).then(response => response.data)
     }
     static getMovieDetails = (id: number) => {
-        const url = baseURL + `/movie/${id}?language=en-US`
+        const url = baseURL + `/movie/${id}?language=en-US&append_to_response=release_dates`
         return axios.get(url).then(response => response.data)
     }
     static getMovieCredits = (id: number) => {

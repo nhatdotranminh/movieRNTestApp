@@ -35,6 +35,12 @@ const movieSlice = createSlice({
     setSortBy: (state, action) => {
       state.sortBy = action.payload;
     },
+    resetMovies: (state) => {
+      state.list = [];
+      state.page = 1;
+      state.totalPages = 1;
+      state.canLoadMore = true;
+    },
   },
   extraReducers: (builder) => {
     builder

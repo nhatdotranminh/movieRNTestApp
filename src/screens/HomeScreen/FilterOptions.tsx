@@ -13,6 +13,7 @@ interface FilterOptionsProps {
     updateCategory: (category: string) => void;
     updateSortBy: (sortBy: string) => void;
     handleSearch: (searchQuery: string) => void;
+    loading: boolean;
 }
 
 const FilterOptions = React.memo<FilterOptionsProps>(({
@@ -23,6 +24,7 @@ const FilterOptions = React.memo<FilterOptionsProps>(({
     updateCategory,
     updateSortBy,
     handleSearch,
+    loading,
 }) => {
 
     const debouncedSearch = useCallback(
@@ -52,7 +54,7 @@ const FilterOptions = React.memo<FilterOptionsProps>(({
                 value={searchQuery}
                 onChangeText={setSearchQuery}
             />
-            <TouchableOpacity style={styles.searchButton} onPress={debouncedSearch}>
+            <TouchableOpacity disabled={loading} style={styles.searchButton} onPress={debouncedSearch}>
                 <Text style={styles.searchButtonText}>Search</Text>
             </TouchableOpacity>
         </View>

@@ -13,7 +13,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    marginHorizontal: 20,
     alignItems: 'center',
     paddingRight: 20
   },
@@ -40,6 +39,11 @@ const styles = StyleSheet.create({
   overview: {
     fontSize: 14,
     marginTop: 20,
+  },
+  removeButton: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
   },
 });
 

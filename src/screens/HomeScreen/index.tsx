@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Header from '../../components/Header';
 import MovieListItem from '../../components/MovieListItem';
 import { RootStackParamList } from '../../navigation/AppStack';
-import { fetchMovies, setCategory, setSortBy } from '../../redux/slices/movieSlice';
+import { fetchMovies, resetMovies, setCategory, setSortBy } from '../../redux/slices/movieSlice';
 import { AppDispatch, RootState } from '../../redux/store';
 import FilterOptions from './FilterOptions';
 import styles from './styles';
@@ -35,6 +35,7 @@ const HomeScreen = () => {
     const handleSearch = useCallback(() => {
         AsyncStorage.setItem('category', category);
         AsyncStorage.setItem('sortBy', sortBy);
+        dispatch(resetMovies())
         dispatch(fetchMovies({ category, sortBy, page: 1, searchTerms: searchQuery }));
     }, [category, sortBy, searchQuery]);
 
@@ -54,6 +55,7 @@ const HomeScreen = () => {
     const renderHeader = useCallback(() => {
         return (
             <FilterOptions
+                loading={status === 'loading'}
                 category={category}
                 sortBy={sortBy}
                 searchQuery={searchQuery}
@@ -72,15 +74,15 @@ const HomeScreen = () => {
         if (status === 'failed') {
             return (
                 <View style={styles.loadingContainer}>
-                    <Text>Error: {error}</Text>
-                    <Text style={styles.errorText}>{"Can't load data, please try again later"}</Text>
+                    <Text style={styles.errorText}>Error: {error}</Text>
+                    <Text style={styles.errorText2}>{"Can't load data, please try again later"}</Text>
                 </View>
             );
         }
         if (movies.length === 0 && status === 'succeeded') {
             return (
                 <View style={styles.emptyContainer}>
-                    <Icon name="database" size={20} color="#000" />
+                    <Icon name="database" size={50} color="#000" />
                     <Text style={styles.emptyText}>No data found</Text>
                 </View>
             );
@@ -95,12 +97,9 @@ const HomeScreen = () => {
     const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
         const { contentOffset } = e.nativeEvent;
         const isScrollUp = contentOffset.y > 0
-        if (!isScrollUp) {
+        if (isScrollUp === isShowFilter) {
             LayoutAnimation.easeInEaseOut();
-            setIsShowFilter(true);
-        } else {
-            LayoutAnimation.easeInEaseOut();
-            setIsShowFilter(false);
+            setIsShowFilter(!isScrollUp);
         }
     };
 
@@ -119,6 +118,7 @@ const HomeScreen = () => {
                 onEndReachedThreshold={0.5}
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
                 initialNumToRender={10}
+                style={styles.listContainer}
             />
         </SafeAreaView>
     );

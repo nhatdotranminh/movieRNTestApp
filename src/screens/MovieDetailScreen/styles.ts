@@ -5,16 +5,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
   topContainer: {
-    paddingTop: 15,
+
     backgroundColor: '#00A9CE',
     paddingBottom: 35,
+    paddingTop: 15,
   },
   posterContainer: {
     alignItems: 'center',
@@ -26,13 +21,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingBottom: 10,
-    paddingTop: 35
+
   },
   poster: {
     width: 111,
     height: 145,
     borderRadius: 10,
     resizeMode: 'cover',
+  },
+  certificateContainer: {
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginRight: 10,
+    opacity: 0.7,
+    alignSelf: 'flex-start',
   },
   headerTextContainer: {
     flex: 1,
@@ -132,13 +137,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
     paddingVertical: 8,
     marginTop: 35,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#fff',
-    width: 211
+    alignSelf: 'flex-start',
+    paddingHorizontal: 15,
   },
   watchlistButtonText: {
     color: '#fff',
@@ -146,53 +151,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 18,
   },
-  castContainer: {
-    marginTop: 20,
-  },
-  castTitle: {
-    color: '#000',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    paddingHorizontal: 15,
-  },
-  castCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    width: 140,
-    marginRight: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginBottom: 15,
-  },
-  castImage: {
-    width: 140,
-    height: 175,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-  },
-  placeholderImage: {
-    backgroundColor: '#e1e1e1',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  castInfo: {
-    padding: 10,
-    height: 80,
-  },
-  castName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  castCharacter: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
-  },
+
   circularProgressContainer: {
     width: 60,
     height: 60,
@@ -225,7 +184,25 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 14,
     fontWeight: '600',
-  }
+  },
+  castContainer: {
+    marginTop: 20,
+  },
+  castTitle: {
+    color: '#000',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    paddingHorizontal: 15,
+  },
+  notFoundText: {
+    color: '#000',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    opacity: 0.5,
+  },
 });
 
 export default styles;
